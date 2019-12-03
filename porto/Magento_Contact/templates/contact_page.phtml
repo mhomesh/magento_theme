@@ -1,0 +1,50 @@
+<?php
+    $contacts_config = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_settings/contacts');
+    $_infoblock = $contacts_config['infoblock'];
+    $_customblock = $contacts_config['customblock'];
+    
+    if($_customblock) {
+        $block = $this->getLayout()->createBlock('Magento\Cms\Block\Block');
+        if($block) {
+            $block->setBlockId($_customblock);
+        }
+        if($block){
+            echo '<div class="row"><div class="col-md-12">'.$block->toHtml().'</div></div>';
+        }
+    }
+?>
+<div class="row">
+    <div class="col-md-8"><?php echo $this->getChildHtml('contactForm')?></div>
+    <div class="col-md-4 contact-info">
+        <div class="contacts-title"><?php echo __('Contact') ?> <b><?php echo __('Details') ?></b></div>
+        <?php //echo $_infoblock; ?>
+		<div class="row">
+<div class="col-md-12">
+    <i class="porto-icon-phone"></i>
+    <p>Customer Support (10 AM to 7 PM):</p>
+    <p>011-49879350</p>
+</div>
+</div>
+<div class="row">
+<div class="col-md-12">
+    <i class="porto-icon-phone"></i>
+    <p>Bulk Enquiry (10 AM to 7 PM):</p>
+    <p>8700643709</p>
+</div>
+</div>
+<div class="row">
+<div class="col-md-12">
+    <i class="porto-icon-mail-alt"></i>
+    <p>Email Us:</p>
+    <p>contact@adventuregears.com</p>
+</div>
+</div>
+<div class="row">
+<div class="col-md-12">
+    <i class="porto-icon-skype"></i>
+    <p>Address:</p>
+    <p>Building No. 21, Second Floor,<br>Shivaji Marg, New Delhi - 110015</p>
+</div>
+</div>
+    </div>
+</div>

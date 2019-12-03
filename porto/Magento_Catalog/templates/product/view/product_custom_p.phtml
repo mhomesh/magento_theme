@@ -1,0 +1,221 @@
+<?php
+    $porto_helper = $this->helper('Smartwave\Porto\Helper\Data');
+    $product_view = $porto_helper->getConfig('porto_settings/product');
+    $_helper = $this->helper('Magento\Catalog\Helper\Output');
+    $_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
+    $sticky_header = "no-sticky-header";
+    if($porto_helper->getConfig('porto_settings/header/sticky_header')) {
+        $sticky_header = "";
+    }
+    $_product = $block->getProduct();
+    if(isset($product_view['enable_addtocart_sticky']) && $product_view['enable_addtocart_sticky']) {
+        $productImage = $_imagehelper->init($_product, 'category_page_grid')->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(FALSE)->resize(50);
+        $productImageUrl = $productImage->getUrl();
+?>
+<style>
+.stickyadd .fieldset {
+    float: right;
+    margin: -49px 165px 0px 0px;
+}
+.product-info-main-p .qty.field .qty-changer>a:first-child {
+    left: auto;
+    right: 4px;
+    border-radius: 0;
+}
+.product-info-main-p .qty.field .qty-changer>a:last-child {
+    border-radius: 0;
+}
+.product-info-main-p .box-tocart .input-text.qty {
+    font-family: 'Oswald';
+    display: inline-block;
+    vertical-align: middle;
+    height: 43px;
+    width: 44px!important;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+    color: #61605a;
+    margin: 0;
+    border-radius: 0;
+    border-color: #dae2e6;
+}
+.product-info-main-p .qty.field .qty-changer>a {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 43px;
+    width: 30px;
+    line-height: 41px;
+    text-align: center;
+    margin: 0;
+    border-color: #dae2e6;
+}
+.product-info-main-p .qty.field .qty-changer>a {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 43px;
+    width: 30px;
+    line-height: 41px;
+    text-align: center;
+    margin: 0;
+    border-color: #dae2e6;
+}
+.product-info-main-p .qty.field .qty-changer > a .porto-icon-up-dir:before {
+    content: '\f882';
+}
+.product-info-main-p .qty.field .qty-changer > a .porto-icon-down-dir:before {
+    content: '\f883';
+}
+.product-info-main-p .fieldset > .field.qty, .product-info-main-p .nested.options-list>.field.qty {
+    position: relative;
+    width: 106px;
+}
+.product-info-main-p .qty.field .control, .product-info-main-p .qty.field .qty-changer {
+    margin-left: 29px;
+}
+.boxsticky{
+	margin:0px;
+}
+@media only screen and (max-width: 767px){
+.sticky-image {
+    margin-left: -25px;
+}
+.box-tocart.boxsticky .qty {
+    margin: 3px -4px;
+}
+}
+</style>
+<div class="sticky-product hide <?php echo $sticky_header; ?>">
+    <div class="container">
+        <div class="sticky-image">
+           <img class="product-image-photo default_image" src="<?php echo $productImageUrl; ?>" alt="<?php echo $productImage->getLabel(); ?>"/>
+        </div>
+        <div class="sticky-detail">
+            <div class="product-name-area">
+                <h2 class="product-name"><?php echo $_helper->productAttribute($_product, $_product->getName(), 'name'); ?></h2>
+                <div class="product-info-price"></div>
+            </div>
+        </div>
+        <?php $buttonTitle = __('Add to Cart'); ?>
+        <?php if ($_product->isSaleable()): ?>
+       <?php $_helper = $this->helper(Magento\Catalog\Helper\Output::class); ?>
+<?php $_product = $block->getProduct(); ?>
+
+<div class="product-info-main-p">
+<div class="product-add-form stickyadd">
+    <form data-product-sku="<?= $block->escapeHtml($_product->getSku()) ?>"
+          action="<?= $block->escapeUrl($block->getSubmitUrl($_product)) ?>" method="post"
+          id="product_addtocart_form"<?php if ($_product->getOptions()) :?> enctype="multipart/form-data"<?php endif; ?>>
+        <input type="hidden" name="product" value="<?= (int)$_product->getId() ?>" />
+        <input type="hidden" name="selected_configurable_option" value="" />
+        <input type="hidden" name="related_product" id="related-products-field" value="" />
+        <input type="hidden" name="item"  value="<?= (int)$block->getRequest()->getParam('id') ?>" />
+        <?= $block->getBlockHtml('formkey') ?>
+        <?= $block->getChildHtml('form_top') ?>
+       <div class="box-tocart boxsticky">
+    <div class="fieldset">
+        <?php if ($block->shouldRenderQuantity()): ?>
+        <div class="field qty">
+            <label class="label" for="qty"><span><?php /* @escapeNotVerified */ echo __('Qty') ?>:</span></label>
+            <div class="control">
+                <input type="number"
+                       name="qty"
+                       id="qty"
+                       maxlength="12"
+                       value="<?php /* @escapeNotVerified */ echo $block->getProductDefaultQty() * 1 ?>"
+                       title="<?php /* @escapeNotVerified */ echo __('Qty') ?>" class="input-text qty"
+                       data-validate="<?php echo $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"
+                       />
+                <div class="qty-changer">
+                    <a href="javascript:void(0)" class="qty-inc"><i class="porto-icon-up-dir"></i></a>
+                    <a href="javascript:void(0)" class="qty-dec"><i class="porto-icon-down-dir"></i></a>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+        <div class="actions">
+            <button type="submit"
+                    title="<?php /* @escapeNotVerified */ echo $buttonTitle ?>"
+                    class="action primary tocart"
+                    id="product-addtocart-button">
+                <span><?php /* @escapeNotVerified */ echo $buttonTitle ?></span>
+            </button>
+            <?php echo $block->getChildHtml('', true) ?>
+        </div>
+    </div>
+</div>
+        <?= $block->getChildHtml('form_bottom') ?>
+    </form>
+</div>
+</div>
+        <?php endif; ?>
+    </div>
+</div>
+<script type="text/javascript">
+require([
+    'jquery'
+], function ($) {
+    $(window).load(function(){
+        var p_scrolled = false; 
+        var offset = $('.box-tocart').offset().top;   
+        $(window).scroll(function(){ 
+            if(offset < $(window).scrollTop() && !p_scrolled){
+                p_scrolled = true;
+                $('.product-info-main .product-info-price > *').each(function(){
+                    $(this).parent().append($(this).clone());
+                    var tmp = $(this).detach();
+                    $('.sticky-product .product-info-price').append(tmp);
+                });
+                $(".sticky-product").removeClass("hide");
+                $("#product-addtocart-button").off("DOMSubtreeModified").on("DOMSubtreeModified",function(){
+                    $("#product-addtocart-button-clone").html($(this).html());
+                    $("#product-addtocart-button-clone").attr("class",$(this).attr("class"));
+                });
+            }
+            if(offset >= $(window).scrollTop() && p_scrolled){
+                p_scrolled = false;
+                $('.product-info-main .product-info-price > *').remove();
+                $('.sticky-product .product-info-price > *').each(function(){
+                    var tmp = $(this).detach();
+                    $('.product-info-main .product-info-price').append(tmp);
+                });
+                $(".sticky-product").addClass("hide");
+            }
+        });
+        $("#product-addtocart-button-clone").click(function(){
+            $("#product-addtocart-button").trigger("click");
+        });
+    }); 
+});
+</script>
+<script>
+    require([
+        'jquery',
+        'priceBox'
+    ], function($){
+        var dataPriceBoxSelector = '[data-role=priceBox]',
+            dataProductIdSelector = '[data-product-id=<?= $block->escapeHtml($_product->getId()) ?>]',
+            priceBoxes = $(dataPriceBoxSelector + dataProductIdSelector);
+
+        priceBoxes = priceBoxes.filter(function(index, elem){
+            return !$(elem).find('.price-from').length;
+        });
+
+        priceBoxes.priceBox({'priceConfig': <?= /* @noEscape */ $block->getJsonConfig() ?>});
+    });
+</script>
+<?php
+    }
+?>
+<?php if(isset($product_view['move_tab']) && $product_view['move_tab']): ?>
+<script type="text/javascript">
+require([
+    'jquery'
+], function ($) {
+    $(document).ready(function(){
+        $(".product.info.detailed").detach().appendTo($(".product-info-main"));
+    });
+});
+</script>
+<?php endif; ?>
